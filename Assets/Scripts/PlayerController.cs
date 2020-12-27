@@ -5,10 +5,13 @@ using UnityEngine.Animations;
 
 public class PlayerController : MonoBehaviour
 {
+    public GameObject projectilePrefab;
+    
     public float horizontalInput;
     public float speed = 10f;
     private float xRange = 15f;
-    public GameObject projectilePrefab;
+    private float _nextProjectileTs = 0f;
+    private float _projectileDelay = 0.2f;
     
     // Start is called before the first frame update
     void Start()
@@ -23,7 +26,7 @@ public class PlayerController : MonoBehaviour
         transform.Translate(horizontalInput * speed * Time.deltaTime * Vector3.right);
 
         // keep the player in bounds
-            Vector3 location = transform.position;
+        Vector3 location = transform.position;
         if (transform.position.x < -xRange)
         {
             transform.position = new Vector3(-xRange, location.y, location.z);
@@ -33,9 +36,11 @@ public class PlayerController : MonoBehaviour
             transform.position = new Vector3(xRange, location.y, location.z);
         }
 
-        if (Input.GetKey(KeyCode.Space))
+        // Spawn projectiles when spacebar is pressed, throttled by _nextSpawnTs
+        if (Input.GetKey(KeyCode.Space) && Time.time > _nextProjectileTs)
         {
             Instantiate(projectilePrefab, transform.position, projectilePrefab.transform.rotation);
+            _nextProjectileTs = Time.time + _projectileDelay;
         }
     }
 }
