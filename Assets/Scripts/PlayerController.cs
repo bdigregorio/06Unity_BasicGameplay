@@ -6,9 +6,9 @@ using UnityEngine.Animations;
 public class PlayerController : MonoBehaviour
 {
     public GameObject projectilePrefab;
-    
     public float horizontalInput;
-    public float speed = 10f;
+    
+    private float speed = 20f;
     private float xRange = 15f;
     private float _nextProjectileTs = 0f;
     private float _projectileDelay = 0.2f;
