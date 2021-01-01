@@ -5,18 +5,19 @@ using UnityEngine;
 public class SpawnManagerX : MonoBehaviour
 {
     public GameObject[] ballPrefabs;
+    
+    private const float StartDelay = 1.0f;
+    private const float MinSpawnTime = 1f;
+    private const float MaxSpawnTime = 4f; 
 
     private const float SpawnLimitXLeft = -22;
     private const float SpawnLimitXRight = 7;
     private const float SpawnPosY = 30;
 
-    private const float StartDelay = 1.0f;
-    private const float SpawnInterval = 4.0f;
-
     // Start is called before the first frame update
     private void Start()
     {
-        InvokeRepeating(nameof(SpawnRandomBall), StartDelay, SpawnInterval);
+        Invoke(nameof(SpawnRandomBall), StartDelay);
     }
 
     // Spawn random ball at random x position at top of play area
@@ -27,6 +28,10 @@ public class SpawnManagerX : MonoBehaviour
 
         // instantiate ball at random spawn location
         Instantiate(randomBallPrefab, randomSpawnPos, randomBallPrefab.transform.rotation);
+        
+        // calculate next random spawn
+        var nextSpawnTime = Random.Range(MinSpawnTime, MaxSpawnTime);
+        Invoke(nameof(SpawnRandomBall), nextSpawnTime);
     }
 
 }
