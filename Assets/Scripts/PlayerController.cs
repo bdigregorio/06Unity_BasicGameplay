@@ -7,42 +7,45 @@ public class PlayerController : MonoBehaviour
 {
     public GameObject projectilePrefab;
     public float horizontalInput;
-    
-    private float speed = 20f;
-    private float xRange = 15f;
-    private float _nextProjectileTs = 0f;
-    private float _projectileDelay = 0.2f;
-    private float _projectileOffset = 1f;
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    private Transform _playerTransform;
+    private float _nextAllowedProjectileTs = 0f;
 
-    // Update is called once per frame
-    void Update()
+    private const float Speed = 20f;
+    private const float XRange = 15f;
+    private const float ProjectileDelay = 0.2f;
+    private const float ProjectileOffset = 1.25f;
+
+    private void Update()
     {
         horizontalInput = Input.GetAxis("Horizontal");
-        transform.Translate(horizontalInput * speed * Time.deltaTime * Vector3.right);
+        (_playerTransform = transform).Translate(horizontalInput * Speed * Time.deltaTime * Vector3.right);
 
-        // keep the player in bounds
-        var playerPosition = transform.position;
-        if (playerPosition.x < -xRange)
-        {
-            transform.position = new Vector3(-xRange, playerPosition.y, playerPosition.z);
-        }
-        if (playerPosition.x > xRange)
-        {
-            transform.position = new Vector3(xRange, playerPosition.y, playerPosition.z);
-        }
+        var playerPosition = _playerTransform.position;
+        KeepPlayerInBounds(playerPosition);
+        SpawnProjectiles(playerPosition);
+    }
 
-        // Spawn projectiles when spacebar is pressed, throttled by _nextSpawnTs
-        if (Input.GetKey(KeyCode.Space) && Time.time > _nextProjectileTs)
+    private void KeepPlayerInBounds(Vector3 playerPosition)
+    {
+        // Place player at horizontal bounds if they have moved outside of it
+        if (playerPosition.x < -XRange)
         {
-            var projectilePosition = new Vector3(playerPosition.x, playerPosition.y + _projectileOffset, playerPosition.z);
+            transform.position = new Vector3(-XRange, playerPosition.y, playerPosition.z);
+        }
+        if (playerPosition.x > XRange)
+        {
+            transform.position = new Vector3(XRange, playerPosition.y, playerPosition.z);
+        }
+    }
+
+    private void SpawnProjectiles(Vector3 playerPosition)
+    {
+        // Create a projectile if the spacebar is pressed and the delay has passsed
+        if (Time.time > _nextAllowedProjectileTs && Input.GetKey(KeyCode.Space))
+        {
+            var projectilePosition = new Vector3(playerPosition.x, playerPosition.y, playerPosition.z + ProjectileOffset);
             Instantiate(projectilePrefab, projectilePosition, projectilePrefab.transform.rotation);
-            _nextProjectileTs = Time.time + _projectileDelay;
+            _nextAllowedProjectileTs = Time.time + ProjectileDelay;
         }
     }
 }
