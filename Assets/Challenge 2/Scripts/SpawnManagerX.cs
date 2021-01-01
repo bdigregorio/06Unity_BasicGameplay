@@ -22,14 +22,11 @@ public class SpawnManagerX : MonoBehaviour
     // Spawn random ball at random x position at top of play area
     private void SpawnRandomBall ()
     {
-        var randomBallIndex = Random.Range(0, 3);
-        var spawnPosX = Random.Range(SpawnLimitXLeft, SpawnLimitXRight);
-        
-        // Generate random ball index and random spawn position
-        Vector3 spawnPos = new Vector3(spawnPosX, SpawnPosY, 0);
+        var randomBallPrefab = ballPrefabs[Random.Range(0, 3)];
+        Vector3 randomSpawnPos = new Vector3(Random.Range(SpawnLimitXLeft, SpawnLimitXRight), SpawnPosY, 0);
 
         // instantiate ball at random spawn location
-        Instantiate(ballPrefabs[randomBallIndex], spawnPos, Quaternion.identity);
+        Instantiate(randomBallPrefab, randomSpawnPos, randomBallPrefab.transform.rotation);
     }
 
 }
